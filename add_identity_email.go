@@ -496,7 +496,10 @@ func (h *AddIdentityEmailHandler) StartEmailValidation(email, rootUri, magicLink
 	fromEmail := smtpConfig.Sender
 	emailBody := fmt.Sprintf(bodyTemplate, fromText, fromEmail, email, smtpConfig.SenderName, email, magicLink)
 
-	emailAuth := smtp.PlainAuth("", smtpConfig.Username, smtpConfig.Password, smtpConfig.Server)
+	var emailAuth smtp.Auth
+	if smtpConfig.Username != "" {
+		emailAuth = smtp.PlainAuth("", smtpConfig.Username, smtpConfig.Password, smtpConfig.Server)
+	}
 	srv := fmt.Sprintf("%s:%d", smtpConfig.Server, smtpConfig.Port)
 	msg := []byte(emailBody)
 	err = smtp.SendMail(srv, emailAuth, fromEmail, []string{email}, msg)
